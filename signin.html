@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign In - GLB Needs</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/fontawesome.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/templatemo-grad-school.css" type="text/css">
+    
+    <style>
+        .signin-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #172238;
+        }
+        .signin-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+        .signin-form h2 {
+            color: #f5a425;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            height: 45px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        .signin-btn {
+            background: #f5a425;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .signin-btn:hover {
+            background: #f5a425;
+            opacity: 0.9;
+        }
+        .signup-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #fff;
+        }
+        .signup-link a {
+            color: #f5a425;
+        }
+        .alert {
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="signin-container">
+        <div class="signin-form">
+            <h2>Sign In</h2>
+            <div id="alert-container"></div>
+            <form id="signin-form">
+                <div class="form-group">
+                    <input type="email" class="form-control" id="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn signin-btn" id="signin-btn">
+                    <span id="btn-text">Sign In</span>
+                    <span id="btn-loading" style="display: none;">
+                        <i class="fa fa-spinner fa-spin"></i> Signing In...
+                    </span>
+                </button>
+                <div class="signup-link">
+                    Don't have an account? <a href="signup.html">Sign Up</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Load Supabase config and services -->
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/auth-service.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('signin-form');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const signinBtn = document.getElementById('signin-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnLoading = document.getElementById('btn-loading');
+            const alertContainer = document.getElementById('alert-container');
+
+            function showAlert(message, type = 'danger') {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+            }
+
+            function setLoading(loading) {
+                if (loading) {
+                    signinBtn.classList.add('loading');
+                    btnText.style.display = 'none';
+                    btnLoading.style.display = 'inline';
+                } else {
+                    signinBtn.classList.remove('loading');
+                    btnText.style.display = 'inline';
+                    btnLoading.style.display = 'none';
+                }
+            }
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                if (!email || !password) {
+                    showAlert('Please fill in all fields');
+                    return;
+                }
+
+                setLoading(true);
+
+                try {
+                    const result = await authService.signIn(email, password);
+                    
+                    if (result.success) {
+                        showAlert(result.message, 'success');
+                        // Redirect will be handled by auth service
+                    } else {
+                        showAlert(result.message);
+                    }
+                } catch (error) {
+                    showAlert('An error occurred. Please try again.');
+                    console.error('Sign in error:', error);
+                } finally {
+                    setLoading(false);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

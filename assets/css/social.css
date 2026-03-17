@@ -1,0 +1,46 @@
+/* .Vinay {
+    display: grid;
+   grid-template-columns: repeat(4,1fr);
+   grid-gap: 18px;
+ 
+}
+.content img{
+    border-radius: 50%;
+}
+
+.Social{
+    border-top: 1px solid black;
+}
+.Social{
+    display: flex;
+    flex-direction: row;
+}  */
+
+.projects-image-content{
+
+    width: 100%;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 18px;
+  }
+  .image-container a img {
+    border-radius: 50%;
+    z-index: 1;
+    width: 100%;
+    /* border-radius: 0.7rem; */
+    /* margin: 0 12px 24px; */
+    cursor: pointer;
+  }
+  
+  .image-container {
+    border: 1px solid #cfc4c4;
+  }
+  .product-link {
+    display: flex;
+    justify-content: center;
+    color: black;
+  }
+  .product {
+    margin-top: 8px;
+  }

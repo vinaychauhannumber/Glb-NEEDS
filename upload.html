@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Material - GLB Needs</title>
+    
+    <link href="vendor/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/fontawesome.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/templatemo-grad-school.css" type="text/css">
+    
+    <style>
+        .upload-container {
+            padding: 80px 0;
+            background: #172238;
+            min-height: 100vh;
+            color: white;
+        }
+        .upload-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+            box-shadow: none;
+        }
+        .form-control option, .form-select option {
+            background: #172238;
+        }
+        .btn-primary {
+            background: #f5a425;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header clearfix" role="header">
+        <div class="logo">
+            <a href="index.html"><em>GLB</em> Needs</a>
+        </div>
+        <a href="#menu" class="menu-link"><i class="fa fa-bars"></i></a>
+        <nav id="menu" class="main-nav" role="navigation">
+            <ul class="main-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="materials.html">Materials</a></li>
+                <!-- We can add more auth-aware links here later -->
+            </ul>
+        </nav>
+    </header>
+
+    <section class="upload-container">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="section-heading">
+                        <h2>Upload New Material</h2>
+                        <p>Fill out the form to add a new study material to the database.</p>
+                    </div>
+                    <div class="upload-form">
+                        <div id="alert-container"></div>
+                        <form id="upload-form">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" rows="3"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="department" class="form-label">Department</label>
+                                    <select class="form-select" id="department" required>
+                                        <option value="">Choose department...</option>
+                                        <option value="Computer Science">Computer Science</option>
+                                        <option value="Computer Science Alight Branches">Computer Science Alight Branches</option>
+                                        <option value="Information Technology">Information Technology</option>
+                                        <option value="Electrical Communication">Electrical Communication</option>
+                                        <option value="Mechanical">Mechanical</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="subject" class="form-label">Subject</label>
+                                    <select class="form-select" id="subject" required></select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="type" class="form-label">Material Type</label>
+                                    <select class="form-select" id="type" required>
+                                        <option value="notes">Notes</option>
+                                        <option value="question_paper">Question Paper</option>
+                                        <option value="syllabus">Syllabus</option>
+                                        <option value="model_answer">Model Answer</option>
+                                        <option value="video">Video</option>
+                                        <option value="pdf">PDF</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="semester" class="form-label">Semester</label>
+                                    <select class="form-select" id="semester" required>
+                                        <option value="">Choose semester...</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="file" class="form-label">File</label>
+                                <input class="form-control" type="file" id="file" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100" id="upload-btn">
+                                <span id="btn-text">Upload Material</span>
+                                <span id="btn-loading" style="display: none;">
+                                    <i class="fa fa-spinner fa-spin"></i> Uploading...
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Supabase JS -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/auth-service.js"></script>
+    <script src="assets/js/data-service.js"></script>
+
+    <script>
+        document.getElementById('semester').addEventListener('change', async function() {
+          const semesterId = this.value;
+          if (!semesterId) return;
+
+          const { data: subjects, error } = await supabase
+            .from('subjects')
+            .select('*')
+            .eq('semester_id', semesterId);
+
+          const subjectSelect = document.getElementById('subject');
+          subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+          if (subjects && subjects.length > 0) {
+            subjects.forEach(subject => {
+              const option = document.createElement('option');
+              option.value = subject.id;
+              option.textContent = subject.name;
+              subjectSelect.appendChild(option);
+            });
+            subjectSelect.disabled = false;
+          } else {
+            subjectSelect.disabled = true;
+          }
+        });
+    </script>
+     <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/custom.js"></script>
+</body>
+</html> 

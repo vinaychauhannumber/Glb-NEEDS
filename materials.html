@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Materials - GLB Needs</title>
+    
+    <link href="vendor/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/fontawesome.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/templatemo-grad-school.css" type="text/css">
+    
+    <style>
+        .materials-container {
+            padding: 80px 0;
+            background: #172238;
+            min-height: 100vh;
+        }
+        .filter-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .material-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+        .material-card:hover {
+            transform: translateY(-5px);
+        }
+        .material-type {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .type-notes { background: #28a745; color: white; }
+        .type-question_paper { background: #dc3545; color: white; }
+        .type-syllabus { background: #007bff; color: white; }
+        .type-model_answer { background: #ffc107; color: black; }
+        .type-video { background: #6f42c1; color: white; }
+        .type-pdf { background: #fd7e14; color: white; }
+        
+        .search-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .search-box::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .search-box:focus {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            outline: none;
+        }
+        
+        .filter-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            width: 100%;
+        }
+        .filter-select option {
+            background: #172238;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: #f5a425;
+            border: none;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #f5a425;
+            opacity: 0.9;
+        }
+        
+        .favorite-btn {
+            background: none;
+            border: none;
+            color: #f5a425;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .favorite-btn:hover {
+            color: #ff6b6b;
+        }
+        .favorite-btn.active {
+            color: #ff6b6b;
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 10px;
+        }
+        .progress-fill {
+            background: #f5a425;
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: white;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 50px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header clearfix" role="header">
+        <div class="logo">
+            <a href="index.html"><em>GLB</em> Needs</a>
+        </div>
+        <a href="#menu" class="menu-link"><i class="fa fa-bars"></i></a>
+        <nav id="menu" class="main-nav" role="navigation">
+            <ul class="main-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#section2">About Us</a></li>
+                <li><a href="materials.html">Materials</a></li>
+                <li><a href="index.html#section5">Lectures</a></li>
+                <li id="auth-links">
+                    <a href="signin.html">Sign In</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="materials-container">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="section-heading">
+                        <h2 style="color: white;">Study Materials</h2>
+                        <p style="color: rgba(255, 255, 255, 0.8);">Find and access study materials for your courses</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <input type="text" class="search-box" id="searchInput" placeholder="Search materials...">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="filter-select" id="departmentFilter">
+                            <option value="">All Departments</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="filter-select" id="subjectFilter">
+                            <option value="">All Subjects</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="filter-select" id="typeFilter">
+                            <option value="">All Types</option>
+                            <option value="notes">Notes</option>
+                            <option value="question_paper">Question Papers</option>
+                            <option value="syllabus">Syllabus</option>
+                            <option value="model_answer">Model Answers</option>
+                            <option value="video">Videos</option>
+                            <option value="pdf">PDFs</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <select class="filter-select" id="semesterFilter">
+                            <option value="">All Sem</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary" id="clearFilters">Clear Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Materials Display -->
+            <div id="materialsContainer">
+                <div class="loading">
+                    <i class="fa fa-spinner fa-spin fa-2x"></i>
+                    <p>Loading materials...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Supabase JS -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Load Supabase config and services -->
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/auth-service.js"></script>
+    <script src="assets/js/data-service.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/custom.js"></script>
+
+    <script>
+        class MaterialsPage {
+            constructor() {
+                this.materials = [];
+                this.filteredMaterials = [];
+                this.filters = {
+                    search: '',
+                    department: '',
+                    subject: '',
+                    type: '',
+                    semester: ''
+                };
+                this.init();
+            }
+
+            async init() {
+                await this.loadDepartments();
+                await this.loadMaterials();
+                this.setupEventListeners();
+                this.renderMaterials();
+            }
+
+            async loadDepartments() {
+                const result = await dataService.getDepartments();
+                if (result.success) {
+                    const departmentFilter = document.getElementById('departmentFilter');
+                    result.data.forEach(dept => {
+                        const option = document.createElement('option');
+                        option.value = dept.name;
+                        option.textContent = dept.name;
+                        departmentFilter.appendChild(option);
+                    });
+                }
+            }
+
+            async loadMaterials() {
+                const result = await dataService.getStudyMaterials();
+                if (result.success) {
+                    this.materials = result.data;
+                    this.filteredMaterials = [...this.materials];
+                }
+            }
+
+            setupEventListeners() {
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    this.filters.search = e.target.value;
+                    this.applyFilters();
+                });
+
+                document.getElementById('departmentFilter').addEventListener('change', (e) => {
+                    this.filters.department = e.target.value;
+                    this.loadSubjects(e.target.value);
+                    this.applyFilters();
+                });
+
+                document.getElementById('subjectFilter').addEventListener('change', (e) => {
+                    this.filters.subject = e.target.value;
+                    this.applyFilters();
+                });
+
+                document.getElementById('typeFilter').addEventListener('change', (e) => {
+                    this.filters.type = e.target.value;
+                    this.applyFilters();
+                });
+
+                document.getElementById('semesterFilter').addEventListener('change', (e) => {
+                    this.filters.semester = e.target.value;
+                    this.applyFilters();
+                });
+
+                document.getElementById('clearFilters').addEventListener('click', () => {
+                    this.clearFilters();
+                });
+            }
+
+            async loadSubjects(department) {
+                const result = await dataService.getSubjects(department);
+                const subjectFilter = document.getElementById('subjectFilter');
+                subjectFilter.innerHTML = '<option value="">All Subjects</option>';
+                
+                if (result.success) {
+                    result.data.forEach(subject => {
+                        const option = document.createElement('option');
+                        option.value = subject.name;
+                        option.textContent = subject.name;
+                        subjectFilter.appendChild(option);
+                    });
+                }
+            }
+
+            applyFilters() {
+                this.filteredMaterials = this.materials.filter(material => {
+                    const matchesSearch = !this.filters.search || 
+                        material.title.toLowerCase().includes(this.filters.search.toLowerCase()) ||
+                        material.description.toLowerCase().includes(this.filters.search.toLowerCase());
+                    
+                    const matchesDepartment = !this.filters.department || 
+                        material.department === this.filters.department;
+                    
+                    const matchesSubject = !this.filters.subject || 
+                        material.subject === this.filters.subject;
+                    
+                    const matchesType = !this.filters.type || 
+                        material.type === this.filters.type;
+
+                    const matchesSemester = !this.filters.semester ||
+                        material.semester == this.filters.semester;
+
+                    return matchesSearch && matchesDepartment && matchesSubject && matchesType && matchesSemester;
+                });
+
+                this.renderMaterials();
+            }
+
+            clearFilters() {
+                this.filters = { search: '', department: '', subject: '', type: '', semester: '' };
+                document.getElementById('searchInput').value = '';
+                document.getElementById('departmentFilter').value = '';
+                document.getElementById('subjectFilter').value = '';
+                document.getElementById('typeFilter').value = '';
+                document.getElementById('semesterFilter').value = '';
+                this.filteredMaterials = [...this.materials];
+                this.renderMaterials();
+            }
+
+            async renderMaterials() {
+                const container = document.getElementById('materialsContainer');
+                
+                if (this.filteredMaterials.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-results">
+                            <i class="fa fa-search fa-2x"></i>
+                            <p>No materials found matching your criteria</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const materialsHTML = this.filteredMaterials.map(material => this.createMaterialCard(material)).join('');
+                container.innerHTML = `
+                    <div class="row">
+                        ${materialsHTML}
+                    </div>
+                `;
+
+                // Add event listeners to favorite buttons
+                this.filteredMaterials.forEach(material => {
+                    const favoriteBtn = document.getElementById(`favorite-${material.id}`);
+                    if (favoriteBtn) {
+                        favoriteBtn.addEventListener('click', () => this.toggleFavorite(material.id, favoriteBtn));
+                    }
+                });
+            }
+
+            createMaterialCard(material) {
+                const typeClass = `type-${material.type}`;
+                const typeLabel = material.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                return `
+                    <div class="col-md-6 col-lg-4">
+                        <div class="material-card">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="material-type ${typeClass}">${typeLabel}</span>
+                                <button class="favorite-btn" id="favorite-${material.id}" title="Add to favorites">
+                                    <i class="fa fa-heart-o"></i>
+                                </button>
+                            </div>
+                            <h5 style="color: white; margin-bottom: 10px;">${material.title}</h5>
+                            <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin-bottom: 15px;">
+                                ${material.description || 'No description available'}
+                            </p>
+                            <div style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin-bottom: 10px;">
+                                <strong>Department:</strong> ${material.department}<br>
+                                <strong>Subject:</strong> ${material.subject}<br>
+                                <strong>Semester:</strong> ${material.semester || 'N/A'}<br>
+                                <strong>Added:</strong> ${new Date(material.created_at).toLocaleDateString()}
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <div class="mt-3">
+                                <a href="${material.file_url}" target="_blank" class="btn btn-primary btn-sm">
+                                    <i class="fa fa-download"></i> Download
+                                </a>
+                                <button class="btn btn-outline-light btn-sm" onclick="materialsPage.viewMaterial(${material.id})">
+                                    <i class="fa fa-eye"></i> View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            async toggleFavorite(materialId, button) {
+                if (!authService.isAuthenticated()) {
+                    alert('Please sign in to add favorites');
+                    return;
+                }
+
+                const icon = button.querySelector('i');
+                const isFavorited = button.classList.contains('active');
+
+                if (isFavorited) {
+                    const result = await dataService.removeFromFavorites(materialId);
+                    if (result.success) {
+                        button.classList.remove('active');
+                        icon.className = 'fa fa-heart-o';
+                    }
+                } else {
+                    const result = await dataService.addToFavorites(materialId);
+                    if (result.success) {
+                        button.classList.add('active');
+                        icon.className = 'fa fa-heart';
+                    }
+                }
+            }
+
+            viewMaterial(materialId) {
+                // Implement material viewing functionality
+                console.log('Viewing material:', materialId);
+            }
+        }
+
+        // Initialize the materials page
+        let materialsPage;
+        document.addEventListener('DOMContentLoaded', function() {
+            materialsPage = new MaterialsPage();
+        });
+    </script>
+</body>
+</html> 

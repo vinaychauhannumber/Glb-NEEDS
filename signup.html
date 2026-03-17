@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign Up - GLB Needs</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/fontawesome.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/templatemo-grad-school.css" type="text/css">
+    
+    <style>
+        .signup-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #172238;
+        }
+        .signup-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+        .signup-form h2 {
+            color: #f5a425;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            height: 45px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        .signup-btn {
+            background: #f5a425;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .signup-btn:hover {
+            background: #f5a425;
+            opacity: 0.9;
+        }
+        .signin-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #fff;
+        }
+        .signin-link a {
+            color: #f5a425;
+        }
+        .alert {
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .password-strength {
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .strength-weak { color: #dc3545; }
+        .strength-medium { color: #ffc107; }
+        .strength-strong { color: #28a745; }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <div class="signup-form">
+            <h2>Sign Up</h2>
+            <div id="alert-container"></div>
+            <form id="signup-form">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="fullName" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                    <div class="password-strength" id="password-strength"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+                </div>
+                <button type="submit" class="btn signup-btn" id="signup-btn">
+                    <span id="btn-text">Sign Up</span>
+                    <span id="btn-loading" style="display: none;">
+                        <i class="fa fa-spinner fa-spin"></i> Creating Account...
+                    </span>
+                </button>
+                <div class="signin-link">
+                    Already have an account? <a href="signin.html">Sign In</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Supabase JS -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <!-- Load Supabase config and services -->
+    <script src="assets/js/supabase-config.js"></script>
+    <script src="assets/js/auth-service.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('signup-form');
+            const fullNameInput = document.getElementById('fullName');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const signupBtn = document.getElementById('signup-btn');
+            const btnText = document.getElementById('btn-text');
+            const btnLoading = document.getElementById('btn-loading');
+            const alertContainer = document.getElementById('alert-container');
+            const passwordStrength = document.getElementById('password-strength');
+
+            function showAlert(message, type = 'danger') {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+            }
+
+            function setLoading(loading) {
+                if (loading) {
+                    signupBtn.classList.add('loading');
+                    btnText.style.display = 'none';
+                    btnLoading.style.display = 'inline';
+                } else {
+                    signupBtn.classList.remove('loading');
+                    btnText.style.display = 'inline';
+                    btnLoading.style.display = 'none';
+                }
+            }
+
+            function checkPasswordStrength(password) {
+                let strength = 0;
+                let feedback = '';
+
+                if (password.length >= 8) strength++;
+                if (/[a-z]/.test(password)) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+                if (strength < 3) {
+                    feedback = '<span class="strength-weak">Weak password</span>';
+                } else if (strength < 5) {
+                    feedback = '<span class="strength-medium">Medium strength password</span>';
+                } else {
+                    feedback = '<span class="strength-strong">Strong password</span>';
+                }
+
+                return { strength, feedback };
+            }
+
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                const strengthInfo = checkPasswordStrength(password);
+                passwordStrength.innerHTML = strengthInfo.feedback;
+            });
+
+            function validateForm() {
+                const fullName = fullNameInput.value.trim();
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+
+                if (!fullName || !email || !password || !confirmPassword) {
+                    showAlert('Please fill in all fields');
+                    return false;
+                }
+
+                if (password !== confirmPassword) {
+                    showAlert('Passwords do not match');
+                    return false;
+                }
+
+                if (password.length < 8) {
+                    showAlert('Password must be at least 8 characters long');
+                    return false;
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showAlert('Please enter a valid email address');
+                    return false;
+                }
+
+                return true;
+            }
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    return;
+                }
+
+                const fullName = fullNameInput.value.trim();
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                setLoading(true);
+
+                try {
+                    const result = await authService.signUp(email, password, fullName);
+                    
+                    if (result.success) {
+                        showAlert(result.message, 'success');
+                        // Form will be reset and user will be redirected after email verification
+                        form.reset();
+                        passwordStrength.innerHTML = '';
+                    } else {
+                        showAlert(result.message);
+                    }
+                } catch (error) {
+                    showAlert('An error occurred. Please try again.');
+                    console.error('Sign up error:', error);
+                } finally {
+                    setLoading(false);
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
