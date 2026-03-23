@@ -1,4 +1,4 @@
-# 🚀 GLB Needs
+#  GLB Needs
 
 > An All-in-One Educational Resource Platform for Students
 
